@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP32 LED Control - Modular</title>
+</head>
+<body>
+  <h1>ESP32 LED Control</h1>
+
+  <button onclick="setLED('ON')">Turn ON</button>
+  <button onclick="setLED('OFF')">Turn OFF</button>
+
+  <h3>LED Status: <span id="led-status">Loading...</span></h3>
+
+  <script type="module">
+    // Import Firebase SDKs (Modular version)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDk6eI8aU0Z-o3llgQnoUcbBqQbc7HmYPc",
+      authDomain: "led-control-14533.firebaseapp.com",
+      databaseURL: "https://led-control-14533-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "led-control-14533",
+      storageBucket: "led-control-14533.appspot.com",
+      messagingSenderId: "501048761283",
+      appId: "1:501048761283:web:1be91f06dcbe271f943b76"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Function to update LED status ("ON" or "OFF" as string)
+    window.setLED = function(status) {
+      set(ref(db, 'LED_STATUS'), status);
+    };
+
+    // Realtime listener to update LED status on webpage
+    const statusRef = ref(db, 'LED_STATUS');
+    onValue(statusRef, (snapshot) => {
+      const status = snapshot.val();
+      document.getElementById('led-status').innerText = (status === "ON") ? 'ON' : ((status === "OFF") ? 'OFF' : 'Unknown');
+    });
+  </script>
+</body>
+</html>
